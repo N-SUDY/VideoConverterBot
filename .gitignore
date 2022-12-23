@@ -132,3 +132,7 @@ dist
 #ffmpeg
 ffmpeg/
 src/ffmpeg
+
+node_modules
+package-lock.json
+build/
