@@ -1,12 +1,11 @@
-import { Telegraf, Context } from "telegraf"
-import { Update } from "telegraf/typings/core/types/typegram"
-import { message } from "telegraf/filters"
+import { extensions } from "../Models/extensions";
 import { FileController } from "./fileController";
 import { FFmpegController } from "./ffmpegController";
-import { Video } from "../Models/video";
-import fs from 'fs'
+import { message } from "telegraf/filters"
 import path from "path";
-import { callback } from "telegraf/typings/button";
+import { Telegraf, Context } from "telegraf"
+import { Update } from "telegraf/typings/core/types/typegram"
+import { Video } from "../Models/video";
 
 export class BotController {
     private bot: Telegraf<Context<Update>>;
@@ -15,17 +14,13 @@ export class BotController {
 
     constructor(bot: Telegraf<Context<Update>>) {
         this.bot = bot;
-        this.ffMpegController = new FFmpegController();
+        this.ffMpegController = new FFmpegController(process.env.FFMPEG_PATH as string);
         this.video = new Video(); 
     }
 
-    private async downloadFile(): Promise<void> {
-        await FileController.downloadFile(this.video.url!, this.video.id + `${this.video.extension}`);
-    }
-
     private async runConverter(): Promise<void> {
-        await this.downloadFile();
-        await this.ffMpegController.Convert(`${this.video.id}${this.video.extension}`, `${this.video.id}.${this.video.futureExtension}`)
+        await FileController.downloadFile(this.video.url!, this.video.id + `${this.video.extension}`);
+        await this.ffMpegController.Convert(`build/temp/${this.video.id}${this.video.extension}`, `build/temp/${this.video.id}${this.video.futureExtension}`)
     }
 
     public run(): void {
@@ -48,7 +43,7 @@ export class BotController {
                 this.video.name = context.message.video.file_name!;
                 this.video.extension = path.extname(context.message.video.file_name!);
 
-                const url = context.telegram.getFileLink(this.video.id)
+                context.telegram.getFileLink(this.video.id)
                 .then((url) => this.video.url = url);
 
                 await context.telegram.sendMessage(context.message.chat.id, "Choose extension", { parse_mode: 'HTML', reply_markup: { inline_keyboard: keyboard } });
@@ -58,37 +53,37 @@ export class BotController {
             }
         });
 
-        this.bot.on('callback_query', async (context) => {
-            console.log( );
+        this.bot.action(extensions, async (context) => {
+            this.video.futureExtension = `.${context.match[0]}`;
+
+            if (this.video.extension == this.video.futureExtension) {
+                await context.telegram.editMessageText(context.callbackQuery.message!.chat.id, 
+                    context.callbackQuery.message!.message_id,
+                    context.callbackQuery.inline_message_id, 
+                    "Future extension is equal to the current one!❌", {parse_mode: 'HTML'});
+
+                    return;
+            }
+
+            await context.telegram.editMessageText(context.callbackQuery.message!.chat.id, 
+                context.callbackQuery.message!.message_id,
+                context.callbackQuery.inline_message_id, 
+                "Processing...");
+
+            await this.runConverter();
+
+            await context.telegram.editMessageText(context.callbackQuery.message!.chat.id, 
+                context.callbackQuery.message!.message_id,
+                context.callbackQuery.inline_message_id, 
+                "Your converted video✅");
+
+            await this.bot.telegram.sendVideo(context.callbackQuery.message?.chat.id!, {
+                source: `build/temp/${this.video.id}${this.video.futureExtension}`
+            });
+
+            await FileController.deleteFile(`build/temp/${this.video.id}${this.video.extension}`);
+            await FileController.deleteFile(`build/temp/${this.video.id}${this.video.futureExtension}`);
         });
-
-        // this.bot.action('mp4', async (context) => {
-        //     console.log();
-        //     // this.video.futureExtension = "mp4";
-        //     // await this.runConverter();
-        //     // await this.bot.telegram.sendVideo(context.callbackQuery.message?.chat.id!, {
-        //     //     source: await fs.createReadStream(`./temp/${this.video.id}.${this.video.futureExtension}`)
-        //     // });
-        // });
-
-        // this.bot.action('avi', async (context) => {
-
-            
-
-        //     this.video.futureExtension = "avi";
-        //     await this.runConverter();
-        //     await this.bot.telegram.sendVideo(context.callbackQuery.message?.chat.id!, {
-        //         source: await fs.createReadStream(`./temp/${this.video.id}.${this.video.futureExtension}`)
-        //     });
-        // });
-
-        // this.bot.action('mpeg', async (context) => {
-        //     this.video.futureExtension = "mpeg";
-        //     await this.runConverter();
-        //     await this.bot.telegram.sendVideo(context.callbackQuery.message?.chat.id!, {
-        //         source: await fs.createReadStream(`./temp/${this.video.id}.${this.video.futureExtension}`)
-        //     });
-        // });
     }
 }
 
