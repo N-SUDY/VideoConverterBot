@@ -1,17 +1,17 @@
 import Ffmpeg from 'fluent-ffmpeg'
-import path from 'path'
 
 export class FFmpegController {
-    constructor() {
-        Ffmpeg.setFfmpegPath("C:\\ffmpeg\\bin\\ffmpeg.exe");
+    constructor(path: string) {
+        Ffmpeg.setFfmpegPath(path);
     }
 
     async Convert(inputPath: string, outputPath: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            const absolutePath = path.resolve(".");
-
-            Ffmpeg(`${absolutePath}\\temp\\${inputPath}`)
-            .save(`${absolutePath}\\temp\\${outputPath}`)
+            Ffmpeg(inputPath)
+            .videoCodec('libx264zxc')
+            .audioCodec('libmp3lame')
+            .addOption('-crf 1')
+            .save(outputPath)
             .on('end', () => {
                 resolve();
             })
