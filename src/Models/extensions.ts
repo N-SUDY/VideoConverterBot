@@ -1,1 +1,1 @@
-export const extensions: string[] = ["mp4", "mpeg", "avi"];
+export const extensions: string[] = [".mp4", ".avi", ".mov", ".wmv", ".mkv"];
