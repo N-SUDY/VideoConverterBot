@@ -8,6 +8,9 @@ export class FFmpegController {
     async Convert(inputPath: string, outputPath: string): Promise<void> {
         return new Promise((resolve, reject) => {
             Ffmpeg(inputPath)
+            .videoCodec('libx264zxc')
+            .audioCodec('libmp3lame')
+            .addOption('-crf 1')
             .save(outputPath)
             .on('end', () => {
                 resolve();
