@@ -22,6 +22,6 @@ HELP_PHOTO = path
 ```
 
 TELEGRAM_BOT_TOKEN - telegram bot token that was provided by official telegram bot (https://t.me/BotFather)<br>
-FFMPEG_PATH - path to the ffmpeg.exe file
-START_PHOTO - path to the photo that will be displayed when the user enters the /start command
-HELP_PHOTO - path to the photo that will be displayed when the user enters the /help command
+FFMPEG_PATH - path to the ffmpeg.exe file<br>
+START_PHOTO - path to the photo that will be displayed when the user enters the /start command<br>
+HELP_PHOTO - path to the photo that will be displayed when the user enters the /help command<br>
