@@ -40,5 +40,5 @@ The bot accepts the following video extensions:<br><br>
 <h2>Restrictions</h2>
 
 - The bot do not accept the video that was forwarded from channel, group or private chat.<br>
-Instead this, download this video and upload via computer or phone.
+Instead of this, download this video and upload via computer or phone.
 
