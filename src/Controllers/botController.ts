@@ -104,7 +104,7 @@ export class BotController {
 
         this.bot.on(message('video'), async (context) => {
             try {
-                if (context.message.forward_date) {
+                if (context.message.forward_date != undefined) {
                     await context.telegram.sendMessage(context.message!.chat.id,
                         "❌I do not process the forwarded message! Upload your video via computer or phone!❌",
                         {
@@ -125,7 +125,7 @@ export class BotController {
 
         this.bot.on(message('document'), async (context) => {
             try {
-                if (context.message.forward_date) {
+                if (context.message.forward_date != undefined) {
                     await context.telegram.sendMessage(context.message!.chat.id,
                         "❌I do not process the forwarded message! Upload your video via computer or phone!❌",
                         {
