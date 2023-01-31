@@ -8,6 +8,7 @@ import { Telegraf, Context } from "telegraf"
 import { Update } from "telegraf/typings/core/types/typegram"
 import { Video } from "../Models/video";
 import { FileLogger } from "../Models/logger";
+import fs from 'fs'
 
 export class BotController {
     private readonly logger: FileLogger;
@@ -105,7 +106,7 @@ export class BotController {
 
         this.bot.on(message('video'), async (context) => {
             try {
-                if (context.message.forward_date != undefined) {
+                if (context.message.forward_date) {
                     await context.telegram.sendMessage(context.message!.chat.id,
                         "❌I do not process the forwarded message! Upload your video via computer or phone!❌",
                         {
@@ -126,7 +127,7 @@ export class BotController {
 
         this.bot.on(message('document'), async (context) => {
             try {
-                if (context.message.forward_date != undefined) {
+                if (context.message.forward_date) {
                     await context.telegram.sendMessage(context.message!.chat.id,
                         "❌I do not process the forwarded message! Upload your video via computer or phone!❌",
                         {
