@@ -1,8 +1,10 @@
 import Ffmpeg from 'fluent-ffmpeg'
 
 export class FFmpegController {
-    constructor(path: string) {
-        Ffmpeg.setFfmpegPath(path);
+    constructor(path?: string) {
+        if (path) {
+            Ffmpeg.setFfmpegPath(path);
+        }
     }
 
     async Convert(inputPath: string, outputPath: string): Promise<void> {
