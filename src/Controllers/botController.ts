@@ -8,6 +8,7 @@ import { Telegraf, Context } from "telegraf"
 import { Update } from "telegraf/typings/core/types/typegram"
 import { Video } from "../Models/video";
 import { FileLogger } from "../Models/logger";
+import fs from 'fs'
 
 export class BotController {
     private readonly logger: FileLogger;
@@ -18,7 +19,8 @@ export class BotController {
     constructor(bot: Telegraf<Context<Update>>) {
         this.logger = new FileLogger("log.txt");
         this.bot = bot;
-        this.ffMpegController = new FFmpegController(process.env.FFMPEG_PATH as string);
+        //If you want to set path to ffmpeg, pass a parameter to the FFmpegController constructor
+        this.ffMpegController = new FFmpegController();
         this.video = new Video();
     }
 
@@ -65,7 +67,7 @@ export class BotController {
         }
 
         await FileController.downloadFile(this.video.url!, `${this.video.name}${this.video.extension}`);
-        await this.ffMpegController.Convert(`build/temp/${this.video.name}${this.video.extension}`, `build/temp/${this.video.name}${this.video.futureExtension}`);
+        await this.ffMpegController.Convert(`temp/${this.video.name}${this.video.extension}`, `temp/${this.video.name}${this.video.futureExtension}`);
     }
 
     //This method contains handlers for telegram bot.
@@ -104,7 +106,7 @@ export class BotController {
 
         this.bot.on(message('video'), async (context) => {
             try {
-                if (context.message.forward_date != undefined) {
+                if (context.message.forward_date) {
                     await context.telegram.sendMessage(context.message!.chat.id,
                         "❌I do not process the forwarded message! Upload your video via computer or phone!❌",
                         {
@@ -125,7 +127,7 @@ export class BotController {
 
         this.bot.on(message('document'), async (context) => {
             try {
-                if (context.message.forward_date != undefined) {
+                if (context.message.forward_date) {
                     await context.telegram.sendMessage(context.message!.chat.id,
                         "❌I do not process the forwarded message! Upload your video via computer or phone!❌",
                         {
@@ -174,14 +176,14 @@ export class BotController {
 
                     await this.bot.telegram.sendVideo(context.callbackQuery.message?.chat.id!,
                         {
-                            source: `build/temp/${this.video.name}${this.video.futureExtension}`,
+                            source: `temp/${this.video.name}${this.video.futureExtension}`,
                         },
                         {
                             caption: `${this.video.extension} ➡️ ${this.video.futureExtension}`
                         });
 
-                    await FileController.deleteFile(`build/temp/${this.video.name}${this.video.extension}`);
-                    await FileController.deleteFile(`build/temp/${this.video.name}${this.video.futureExtension}`);
+                    await FileController.deleteFile(`temp/${this.video.name}${this.video.extension}`);
+                    await FileController.deleteFile(`temp/${this.video.name}${this.video.futureExtension}`);
                 })
                 .catch(async (err) => {
                     await context.telegram.editMessageText(context.callbackQuery.message!.chat.id,
@@ -189,7 +191,8 @@ export class BotController {
                         context.callbackQuery.inline_message_id,
                         "❌Something went wrong, try again!❌");
 
-                    await FileController.deleteFile(`build/temp/${this.video.name}${this.video.extension}`);
+                    await FileController.deleteFile(`temp/${this.video.name}${this.video.extension}`);
+                    await FileController.deleteFile(`temp/${this.video.name}${this.video.futureExtension}`);
 
                     this.logger.error(err, err.stack);
                 });

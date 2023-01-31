@@ -12,7 +12,6 @@ export class FFmpegController {
             Ffmpeg(inputPath)
             .videoCodec('libx264')
             .audioCodec('libmp3lame')
-            .addOption('-crf 1')
             .save(outputPath)
             .on('end', () => {
                 resolve();
