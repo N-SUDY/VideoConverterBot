@@ -8,7 +8,6 @@ import { Telegraf, Context } from "telegraf"
 import { Update } from "telegraf/typings/core/types/typegram"
 import { Video } from "../Models/video";
 import { FileLogger } from "../Models/logger";
-import fs from 'fs'
 
 export class BotController {
     private readonly logger: FileLogger;
