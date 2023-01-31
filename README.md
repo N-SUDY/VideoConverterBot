@@ -26,6 +26,8 @@ HELP_PHOTO = path
 <b>START_PHOTO</b> - path to the photo that will be displayed when the user enters the /start command<br>
 <b>HELP_PHOTO</b> - path to the photo that will be displayed when the user enters the /help command<br>
 
+<b>NOTE:</b> if you don't want to set path to ffmpeg in code, you can delete <b>TELEGRAM_BOT_TOKEN</b> from env. This is useful if you want to dockerize your application.
+
 <h2>Available video extensions</h2>
 The bot accepts the following video extensions:<br><br>
 
