@@ -6,7 +6,15 @@ export class FileController {
 
     static async downloadFile(url: URL, outputFilename: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            const file = fs.createWriteStream("build/temp/" + outputFilename);
+            if (!fs.existsSync("temp")) {
+                fs.mkdir("temp", (error) => {
+                    if (error) {
+                        reject(error);
+                    }
+                });
+            }
+
+            const file = fs.createWriteStream("temp/" + outputFilename);
 
             https.get(url, (response) => {
                 response.pipe(file);
@@ -45,7 +53,7 @@ export class FileController {
     }
 
     static validateFileExtension(extensions: string[], extension: string): boolean {
-        if (extension != "" && extensions.includes(extension)) {
+        if (extension != "" && extensions.includes(extension.toLowerCase())) {
             return true;
         }
 
