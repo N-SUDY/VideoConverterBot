@@ -57,8 +57,8 @@ export class BotService {
         this.bot.help(async (context) => {
             try {
                 await context.telegram.sendMessage(context.message.chat.id, `<b>${context.botInfo.first_name}</b> - this is a bot, that can convert your video from certain extension to other.` +
-                    `\n\nAt the moment, the bot can convert to the following extensions: <b>\nmp4\navi\nmov\nmkv\nwmv</b>` +
-                    `\n\nYou have 2 option to send the video: \n<b>1.Send as video</b>\n<b>2.Send as document</b>`, { parse_mode: 'HTML' });
+                    `\n\nBot can convert to the following extensions: <b>mp4, avi, mov, mkv, wmv</b>` +
+                    `\n\nYou have 2 ways to send the video: \n<b>• Send as video</b>\n<b>• Send as document</b>`, { parse_mode: 'HTML' });
             } catch (error) {
                 this.logger.error((error as Error).stack);
             }
