@@ -32,8 +32,8 @@ export class FileService {
         });
     }
 
-    static async deleteFile(filename: string): Promise<void> {
-        return new Promise((resolve, reject) => {
+    static async deleteFile(filename: string) {
+        return new Promise<void>((resolve, reject) => {
             fs.unlink(filename, (err) => {
                 if (err) {
                     reject(err);
