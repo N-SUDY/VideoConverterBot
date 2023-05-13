@@ -1,20 +1,21 @@
 import fs from 'fs'
 import https from 'https'
 
-export class FileController {
-    private static readonly maxFileSize: number = 20971520;
+const maxFileSize: number = 20971520;
+const tempFolder: string = "temp";
 
-    static async downloadFile(url: URL, outputFilename: string): Promise<void> {
+export class FileService {
+    static async downloadFile(url: URL, outputFilename: string) {
         return new Promise((resolve, reject) => {
-            if (!fs.existsSync("temp")) {
-                fs.mkdir("temp", (error) => {
+            if (!fs.existsSync(tempFolder)) {
+                fs.mkdir(tempFolder, (error) => {
                     if (error) {
                         reject(error);
                     }
                 });
             }
 
-            const file = fs.createWriteStream("temp/" + outputFilename);
+            const file = fs.createWriteStream(`${tempFolder}/${outputFilename}`);
 
             https.get(url, (response) => {
                 response.pipe(file);
@@ -25,7 +26,7 @@ export class FileController {
 
                 file.on("error", (err) => {
                     file.close();
-                    reject(err);      
+                    reject(err);
                 });
             });
         });
@@ -36,10 +37,10 @@ export class FileController {
             fs.unlink(filename, (err) => {
                 if (err) {
                     reject(err);
+                    return;
                 }
-                else {
-                    resolve();
-                }
+
+                resolve();
             });
         });
     }
@@ -61,7 +62,7 @@ export class FileController {
     }
 
     static validateFileSize(fileSize: number): boolean {
-        if (fileSize <= this.maxFileSize) {
+        if (fileSize <= maxFileSize) {
             return true;
         }
 
