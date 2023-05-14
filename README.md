@@ -7,7 +7,6 @@ This bot convert your video from certain extension to others.
 
 ```
 npm install
-npm run build
 npm start
 ```
 
